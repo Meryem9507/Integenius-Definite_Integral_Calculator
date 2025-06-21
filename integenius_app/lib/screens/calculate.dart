@@ -33,7 +33,6 @@ class _CalculateScreenState extends State<CalculateScreen> {
     super.dispose();
   }
 
-  // Basit limit input validasyonu: sayı, 'oo', '-oo' ya da boş olabilir
   bool _isValidLimit(String text) {
     if (text.isEmpty) return true;
     if (text == 'oo' || text == '-oo') return true;
@@ -65,7 +64,6 @@ class _CalculateScreenState extends State<CalculateScreen> {
       return;
     }
 
-    // Backend URL (emülatör için 10.0.2.2)
     final url = Uri.parse('http://10.0.2.2:5000/calculate');
 
     final requestData = {
@@ -113,7 +111,6 @@ class _CalculateScreenState extends State<CalculateScreen> {
                   .where((e) => e.isNotEmpty && e.toLowerCase() != 'null')
                   .toList() ??
               [];
-
           _methodsUsed = (data['methods'] as List<dynamic>?)
                   ?.whereType<String>()
                   .map((e) => e.trim())
@@ -126,7 +123,6 @@ class _CalculateScreenState extends State<CalculateScreen> {
           _errorMessage = null;
         });
       } else {
-        // Server-side error with possible JSON error message
         try {
           final errorData = jsonDecode(response.body);
           setState(() {
@@ -169,9 +165,7 @@ class _CalculateScreenState extends State<CalculateScreen> {
   }
 
   Widget _buildMethodChips() {
-    if (_methodsUsed.isEmpty) return const SizedBox.shrink();
-
-    final methodStyles = {
+    final Map<String, List<dynamic>> methodStyles = {
       'U-Substitution': [Colors.blue, Icons.swap_horiz],
       'Integration by Parts': [Colors.green, Icons.call_split],
       'Trigonometric Substitution': [Colors.orange, Icons.change_circle],
@@ -179,45 +173,104 @@ class _CalculateScreenState extends State<CalculateScreen> {
       'Trigonometric Identities': [Colors.purple, Icons.functions],
     };
 
+    if (_latexResult.isEmpty && _errorMessage == null) {
+      return const SizedBox.shrink();
+    }
+
+    if (_methodsUsed.isEmpty) {
     return Padding(
       padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Methods Used:',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: Colors.deepPurple,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Wrap(
-            spacing: 8,
-            children: _methodsUsed.map((method) {
-              final style = methodStyles[method] ??
-                  [Colors.grey, Icons.integration_instructions];
-              return Chip(
-                avatar:
-                    Icon(style[1] as IconData, color: Colors.white, size: 18),
-                label: Text(
-                  method,
-                  style: const TextStyle(color: Colors.white, fontSize: 12),
+      child: Card(
+        elevation: 2,
+        color: Colors.grey.shade50,
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              Icon(Icons.info_outline, color: Colors.grey[600], size: 20),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  'No specific method was identified for this solution.',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontStyle: FontStyle.italic,
+                    color: Colors.grey[600],
+                  ),
                 ),
-                backgroundColor: style[0] as Color,
-              );
-            }).toList(),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
+  }
+
+    return Padding(
+    padding: const EdgeInsets.all(16),
+    child: Card(
+      elevation: 2,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.build, color: Colors.deepPurple, size: 24),
+                const SizedBox(width: 8),
+                Text(
+                  _methodsUsed.length == 1 ? 'Method Used:' : 'Methods Used:',
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.deepPurple,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: _methodsUsed.map((method) {
+                final style = methodStyles[method] ??
+                    [Colors.grey, Icons.integration_instructions];
+                return Chip(
+                  avatar: Icon(style[1] as IconData,
+                      color: Colors.white, size: 18),
+                  label: Text(
+                    method,
+                    style: const TextStyle(
+                      color: Colors.white, 
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  backgroundColor: style[0] as Color,
+                  elevation: 2,
+                );
+              }).toList(),
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
+}
+
+  String _capitalizeEachWord(String text) {
+    return text
+        .split(' ')
+        .map((word) =>
+            word.isNotEmpty ? word[0].toUpperCase() + word.substring(1) : '')
+        .join(' ');
   }
 
   Widget _buildStepsSection() {
     if (_solutionSteps.isEmpty) return const SizedBox.shrink();
 
-    // Filtreleme: boş, error, undefined, null ifadelerini kaldır
+    // Filter: error, undefined, null terms are removed
     final filteredSteps = _solutionSteps.where((step) {
       final lowerStep = step.toLowerCase();
       return step.length > 3 &&

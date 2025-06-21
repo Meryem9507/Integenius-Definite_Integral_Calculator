@@ -1,7 +1,79 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 
 class HelpScreen extends StatelessWidget {
   const HelpScreen({super.key});
+
+  // markdownData burada sınıf içinde, method dışında tanımlanmalı:
+  static const String markdownData = """
+**1. INPUT FUNCTION:** Enter a valid mathematical function to calculate its definite integral.
+
+- For exponentiation use `**`. Example: `x**2`.
+
+**2. EULER'S NUMBER (e):** Use `E` for Euler's number. Example: `E**(2*x)`.
+
+- Avoid using lowercase `e` as it will be interpreted differently.
+
+**3. LOGARITHMS:** Use `ln(x)` for natural logarithms.
+
+- If you need a logarithm with a different base, use `log2(x)` for base 2, `log10(x)` for base 10.
+
+- Example inputs:
+  - Natural log: `ln(x)`
+  - Base 2 log: `log2(x)`
+  - Base 10 log: `log10(x)`
+
+**4. TRIGONOMETRIC FUNCTIONS:** Use standard trigonometric functions such as `sin(x)`, `cos(x)`, `tan(x)`.
+
+- Example: `sin(x)` for the sine of x, `cos(x)` for cosine of x.
+
+**5. INVERSE TRIGONOMETRIC FUNCTIONS:** Use the internal function names such as `atan(x)`, `asin(x)`, `acos(x)`.
+
+- Example: `atan(x)` for the inverse tangent of x.
+- Avoid using `arctan(x)`, `arcsin(x)`, or `arccos(x)` as they are not recognized.
+
+**6. PARENTHESES:** Use parentheses `()` to clarify the order of operations.
+
+- Example: `(x + 1)**2` or `sin(x) * cos(x)`.
+
+**7. MULTIPLICATION AND DIVISION:** To specify multiplication, use `*` or simply place variables next to each other. For division, use `/` and use parentheses to clarify the order when dividing.
+
+- Example: `x * sin(x)` or `xsin(x)`.
+- Example: `x / sin(x)` or `x/sin(x)`.
+- Example: `(x + 1) / (sin(x) + cos(x))`.
+
+**8. EXPONENT RULES:** When using exponentiation, be careful how you enter the expression.
+
+- Always use `**` to represent exponentiation, not `^`.
+- To raise a number or constant to a compound expression (like `2*x`), use parentheses.
+- ✅ Correct: `E**(2*x)` → means e^(2x)
+- ❌ Incorrect: `E**2*x` → means (e^2) * x, not e^(2x)
+- Summary:
+  - Use `E**(expression)` for exponential expressions involving variables.
+  - Never use `^` as it performs bitwise XOR, not exponentiation.
+
+**9. ROOTS AND FRACTIONS IN EXPONENTS:** Always use parentheses when writing fractional exponents.
+
+- Example: `(x**3 + 1)**(1/2)` for the square root of `(x**3 + 1)`.
+- ✅ Correct: `(x**3 + 1)**(1/2)`
+- ❌ Incorrect: `(x**3 + 1)**1/2` (interpreted as divided by 2)
+
+**10. PARTIAL FRACTIONS INPUT FORMAT:** When entering rational functions for partial fraction decomposition, format input precisely.
+
+- Write numerator and denominator clearly with proper parentheses and explicit multiplication signs `*`.
+- Use `**` for exponentiation to indicate powers.
+- Enclose each factor of the denominator in parentheses and multiply explicitly.
+- Order of denominator factors matters for correct parsing.
+- Example: `(2x+1) / ((x-3)**2 * (x+1))`
+- Note: swapping denominator order `(2x+1) / ((x+1)*(x-3)**2)` may give incorrect results.
+- Summary:
+  - Use parentheses around numerator and denominator.
+  - Use `**` for powers.
+  - Use `*` for multiplication explicitly.
+  - Keep denominator factors in correct order.
+
+---
+""";
 
   @override
   Widget build(BuildContext context) {
@@ -36,30 +108,27 @@ class HelpScreen extends StatelessWidget {
             ),
           ),
         ),
-        //HEADER
         body: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
+              // HEADER
               Container(
                 width: deviceWidth,
                 height: deviceHeight * 1 / 8,
                 color: const Color.fromRGBO(11, 15, 26, 1.0),
-                child: const Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "How to Use the App?",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 26,
-                        fontWeight: FontWeight.bold,
-                      ),
+                child: const Center(
+                  child: Text(
+                    "How to Use the App?",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 26,
+                      fontWeight: FontWeight.bold,
                     ),
-                  ],
+                  ),
                 ),
               ),
-              // MAIN CONTENT
+              // INTRO TEXT
               Container(
                 width: deviceWidth,
                 color: Colors.white,
@@ -75,7 +144,7 @@ class HelpScreen extends StatelessWidget {
                   textAlign: TextAlign.justify,
                 ),
               ),
-              //User Guide
+              // USER GUIDE
               Container(
                 width: deviceWidth,
                 padding: const EdgeInsets.all(20),
@@ -104,52 +173,50 @@ class HelpScreen extends StatelessWidget {
                       textAlign: TextAlign.justify,
                     ),
                     const SizedBox(height: 20),
+
+                    // MARKDOWN BODY
+                    MarkdownBody(
+                      data: markdownData,
+                      styleSheet: MarkdownStyleSheet(
+                        p: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w400,
+                          fontFamily: 'Academic',
+                          color: Colors.black,
+                        ),
+                        strong: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                        code: const TextStyle(
+                          backgroundColor: Color(0xfff0f0f0),
+                          fontFamily: 'Courier',
+                          fontSize: 16,
+                          color: Color.fromARGB(255, 7, 54, 136),
+                          fontWeight: FontWeight.bold,
+                        ),
+                        listBullet: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 20),
+
+                    // IMAGE
+                    Container(
+                      width: deviceWidth * 0.9,
+                      height: deviceHeight * 0.3,
+                      child: Image.asset(
+                        "lib/assets/images/integral.jpg",
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+
+                    const SizedBox(height: 20),
+
                     const Text(
-                      "1.**INPUT FUNCTION**: Enter a valid mathematical function to calculate its definite integral.\n"
-                      "- For exponentiation use `**`. Example: `x**2`.\n"
-                      "\n"
-
-                      "2.**EULER'S NUMBER (e)**: Use `E` for Euler's number. Example: `E**(2*x)`.\n"
-                      "- Avoid using lowercase `e` as it will be interpreted differently.\n"
-                      "\n"
-
-                      "3.**LOGARITHMS**: Use `ln(x)` for natural logarithms.\n"
-                      "- If you need a logarithm with a different base, use `log2(x)` for base 2, `log10(x)` for base 10.\n"
-                      "- Example inputs:\n"
-                      "  - Natural log: `ln(x)`\n"
-                      "  - Base 2 log: `log2(x)`\n"
-                       "  - Base 10 log: `log10(x)`\n"
-                      "\n"
-
-                      "4.**TRIGONOMETRIC FUNCTIONS**: Use standard trigonometric functions such as `sin(x)`, `cos(x)`, `tan(x)`.\n"
-                      "- Example: `sin(x)` for the sine of x, `cos(x)` for cosine of x.\n"
-                      "\n"
-
-                      "5.**INVERSE TRIGONOMETRIC FUNCTIONS**: Use the internal function names such as `atan(x)`, `asin(x)`, `acos(x)`.\n"
-                      "- Example: `atan(x)` for the inverse tangent of x.\n"
-                      "- Avoid using `arctan(x)`, `arcsin(x)`, or `arccos(x)` as they are not recognized.\n"
-                      "\n"
-
-                      "6.**PARANTHESES**: Use parentheses `()` to clarify the order of operations.\n"
-                      " - Example: `(x + 1)**2` or `sin(x) * cos(x)`.\n"
-                      "\n"
-
-                      "7.**MULTIPLICATION AND DIVISION**: To specify multiplication, use `*` or simply place variables next to each other. For division, use `/` and additionally you can also use parentheses to clarify the order of operations when dividing.\n"
-                      "- Example: `x * sin(x)` or `xsin(x)`.\n"
-                      "- Example: `x / sin(x)` or `x/sin(x)`.\n"
-                      "- Example: `(x + 1) / (sin(x) + cos(x))`.\n"
-                      "\n"
-
-                      "8.**EXPONENT RULES**: When using exponentiation, be careful with how you enter the expression.\n"
-                      "- Always use `**` to represent exponentiation, not `^`.\n"
-                      "- To raise a number or constant to a compound expression (like `2*x`), use parentheses.\n"
-                      "- ✅ Correct: `E**(2*x)` → means e^(2x)\n"
-                      " - ❌ Incorrect: `E**2*x` → means (e^2) * x, not e^(2x)\n"
-                      "- Summary:\n"
-                      "- Use `E**(expression)` for exponential expressions involving variables.\n"
-                      "- Never use `^` as it performs bitwise XOR, not exponentiation in Python/SymPy.\n"
-                      "\n",
-
+                      "Example input for the above integral: (x+2)*E**(3x)\n-----------------------------------------------------------------------\n",
                       style: TextStyle(
                         color: Colors.black,
                         fontSize: 18,
@@ -158,26 +225,12 @@ class HelpScreen extends StatelessWidget {
                       ),
                       textAlign: TextAlign.justify,
                     ),
-                    Image.asset(
-                      "lib/assets/images/integral.jpg",
-                      fit: BoxFit.contain,
-                    ),
-                    const SizedBox(height: 10),
-                    const Text(
-                      "Example input for the above integral: (x+2)*E**(3*x)",
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w400,
-                        fontFamily: 'Academic',
-                      ),
-                      textAlign: TextAlign.justify,
-                    ),
+
                     const SizedBox(height: 20),
                   ],
                 ),
               ),
-              //Add space for scrolling
+              // Extra spacing for scrolling comfort
               SizedBox(height: 20),
             ],
           ),
@@ -186,3 +239,7 @@ class HelpScreen extends StatelessWidget {
     );
   }
 }
+
+
+
+
