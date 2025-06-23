@@ -72,6 +72,17 @@ class HelpScreen extends StatelessWidget {
   - Use `*` for multiplication explicitly.
   - Keep denominator factors in correct order.
 
+  **11. POWER OF TRIGONOMETRIC FUNCTIONS:** When entering power of trigonometric functions, make sure the exponent is applied to the entire function using the correct syntax.
+
+- Use ** the exponent for exponentiation and always write the function name before the exponent.
+- ✅ Correct format: cos**4(x) means `cos^4(x)`.
+- ❌ Avoiding writing: cos**4(x) as it will be interpreted as (cos(x))^4, which might behave differently in symbolic simplifications.
+- This ensure the system can apply trigonometric identities (like power-reduction or product-to-sum) properly.
+
+**12. ABSOLUTE VALUES:** When writing functions that include absolute value expressions, make sure to use 'abs(x)' instead of |x|.
+
+- Example: e^-|x| should be written as E**(-abs(x)) or E**-abs(x).
+
 ---
 """;
 
