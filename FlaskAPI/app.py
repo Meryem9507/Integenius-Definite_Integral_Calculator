@@ -11,6 +11,12 @@ import traceback
 app = Flask(__name__)
 CORS(app)
 
+
+@app.route('/')
+def home():
+    return "API is running!"
+
+
 # We define the variable x as a real number
 x = symbols('x', real=True)
 
