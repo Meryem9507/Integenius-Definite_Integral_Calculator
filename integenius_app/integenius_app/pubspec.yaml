@@ -31,7 +31,7 @@ dependencies:
   flutter:
     sdk: flutter
   http: ^1.4.0
-  flutter_math_fork: ^0.7.3
+  flutter_math_fork: 0.7.3
   flutter_svg: ^2.0.10
   flutter_markdown: ^0.7.6+1
 
